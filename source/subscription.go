@@ -91,12 +91,17 @@ Main:
 
 		case update := <-c:
 			for _, item := range update {
+				state := StateIgnored
+				if item.Airdate.After(time.Now()) {
+					state = StateUnseen
+				}
+
 				ep := EpisodeSubscription{
 					Id:       sub.GetSeriesId(item.Id),
 					Source:   sub.Source,
 					SeriesId: int(sub.Series.Id),
 					Info:     item,
-					State:    StateIgnored,
+					State:    state,
 				}
 				GetPersistence("subscriptions").Insert(ep)
 			}
