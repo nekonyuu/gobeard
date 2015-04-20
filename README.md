@@ -24,3 +24,9 @@ Commands:
 
 Use "bin/gobeard help <command>" for more information about a command.
 ```
+
+# Credits
+
+ * Strike API: [[https://getstrike.net/api/]]
+ * TVMaze API: [[http://www.tvmaze.com/api]]
+
