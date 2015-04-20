@@ -6,6 +6,10 @@ mongodb:
 api:
   addr: 0.0.0.0:8080
 torrents:
+	transmission:
+		endpoint: http://127.0.0.1:9091
+		username: myuser
+		password: mypassword
   watch_dir: /tmp/torrents
   quality:
     - 720p
