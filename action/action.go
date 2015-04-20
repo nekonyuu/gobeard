@@ -6,7 +6,7 @@ import (
 )
 
 type Downloader interface {
-	Download(e source.EpisodeSubscription, hash string, url string)
+	Download(e source.EpisodeSubscription, hash string, url string) error
 }
 
 type Action interface {

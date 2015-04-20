@@ -14,32 +14,34 @@ import (
 
 type WatchDir struct{}
 
-func (WatchDir) Download(e source.EpisodeSubscription, hash string, url string) {
+func (WatchDir) Download(e source.EpisodeSubscription, hash string, url string) error {
 	resp, err := http.Get(url)
 	if err != nil {
 		logrus.Errorf("error retrieving torrent file: %s", err)
-		return
+		return err
 	}
 	defer resp.Body.Close()
 
 	tmp, err := ioutil.TempFile(os.TempDir(), "gobeard")
 	if err != nil {
 		logrus.Errorf("cannot create temporary file: %s", err)
-		return
+		return err
 	}
 	defer os.Remove(tmp.Name())
 
 	_, err = io.Copy(tmp, resp.Body)
 	if err != nil {
 		logrus.Errorf("error writing torrent file: %s", err)
-		return
+		return err
 	}
 
 	err = os.Rename(tmp.Name(), util.GetConfig().Torrents.WatchDir+"/"+hash+".torrent")
 	if err != nil {
 		logrus.Errorf("error creating output torrent file: %s", err)
-		return
+		return err
 	}
 
 	source.GetPersistence("subscriptions").UpdateId(e.Id, bson.M{"$set": bson.M{"state": source.StateSeen}})
+
+	return nil
 }

@@ -10,15 +10,21 @@ import (
 
 type Transmission struct{}
 
-func (Transmission) Download(e source.EpisodeSubscription, hash string, url string) {
+func (Transmission) Download(e source.EpisodeSubscription, hash string, url string) error {
 	c := util.GetConfig().Torrents.Transmission
 	tr := transmission.New(c.Endpoint, c.Username, c.Password)
 	info, err := tr.AddTorrentByURL(url, "/tmp")
 	if err != nil {
 		logrus.Errorf("error starting download: %s", err)
-		return
+		return err
+	}
+	if info.HashString == "" {
+		logrus.Errorf("error starting downloaded file")
+		return err
 	}
 
 	logrus.Infof("torrent added: %s (%s)", info.HashString, info.Name)
 	source.GetPersistence("subscriptions").UpdateId(e.Id, bson.M{"$set": bson.M{"state": source.StateSeen}})
+
+	return nil
 }

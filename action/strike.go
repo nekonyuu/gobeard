@@ -42,41 +42,42 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 			continue
 		}
 
-		break
-	}
+		// Drop the quality requirement if none matched
+		if resp == nil {
+			u := fmt.Sprintf(ApiSearchNoQualityEndpoint, url.QueryEscape(series.Series.Title), e.Info.Season, e.Info.Number)
+			resp, err = http.Get(u)
+			if err != nil {
+				logrus.Errorf("error getting torrents listing: %s", err)
+				return
+			}
+			if resp.StatusCode != 200 {
+				logrus.Errorf("no torrents were found for the request")
+				return
+			}
+		}
 
-	// Drop the quality requirement if none matched
-	if resp == nil {
-		u := fmt.Sprintf(ApiSearchNoQualityEndpoint, url.QueryEscape(series.Series.Title), e.Info.Season, e.Info.Number)
-		resp, err = http.Get(u)
+		defer resp.Body.Close()
+		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			logrus.Errorf("error getting torrents listing: %s", err)
+			logrus.Errorf("error reading torrents listing body: %s", err)
 			return
 		}
-		if resp.StatusCode != 200 {
-			logrus.Errorf("no torrents were found for the request")
+
+		var tor map[string]interface{}
+		err = json.Unmarshal(body, &tor)
+		if err != nil {
+			logrus.Errorf("unable to unmarshal JSON: %s", err)
 			return
 		}
+
+		to := tor["torrents"].([]interface{})[0]
+		t := to.(map[string]interface{})
+		torrent_hash := t["torrent_hash"].(string)
+		torrent_url := fmt.Sprintf(ApiDownloadEndpoint, torrent_hash)
+
+		err = a.Subaction.Download(e, torrent_hash, torrent_url)
+		if err != nil {
+			continue
+		}
 	}
-
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		logrus.Errorf("error reading torrents listing body: %s", err)
-		return
-	}
-
-	var tor map[string]interface{}
-	err = json.Unmarshal(body, &tor)
-	if err != nil {
-		logrus.Errorf("unable to unmarshal JSON: %s", err)
-		return
-	}
-
-	to := tor["torrents"].([]interface{})[0]
-	t := to.(map[string]interface{})
-	torrent_hash := t["torrent_hash"].(string)
-	torrent_url := fmt.Sprintf(ApiDownloadEndpoint, torrent_hash)
-
-	a.Subaction.Download(e, torrent_hash, torrent_url)
 }
