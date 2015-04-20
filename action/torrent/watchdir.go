@@ -41,6 +41,7 @@ func (WatchDir) Download(e source.EpisodeSubscription, hash string, url string) 
 		return err
 	}
 
+	logrus.Infof("watchdir: torrent added: %s", hash)
 	source.GetPersistence("subscriptions").UpdateId(e.Id, bson.M{"$set": bson.M{"state": source.StateSeen}})
 
 	return nil

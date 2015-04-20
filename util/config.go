@@ -9,38 +9,30 @@ import (
 )
 
 type Config struct {
-	CheckInterval   time.Duration  `yaml:"check_interval"`
-	EventsQueueSize int            `yaml:"events_queue_size"`
-	Api             ApiConfig      `yaml:"api"`
-	MongoDb         MongoDbConfig  `yaml:"mongodb"`
-	Torrents        TorrentsConfig `yaml:"torrents"`
-	Slack           SlackConfig    `yaml:"slack"`
-}
-
-type MongoDbConfig struct {
-	Host string `yaml:"host"`
-}
-
-type ApiConfig struct {
-	Addr string `yaml:"addr"`
-}
-
-type TorrentsConfig struct {
-	Transmission TransmissionConfig `yaml:"transmission"`
-	Quality      []string           `yaml:"quality"`
-	WatchDir     string             `yaml:"watch_dir"`
-}
-
-type TransmissionConfig struct {
-	Endpoint    string `yaml:"endpoint"`
-	Username    string `yaml:"username"`
-	Password    string `yaml:"password"`
-	DownloadDir string `yaml:"download_dir"`
-}
-
-type SlackConfig struct {
-	WebhookUrl string `yaml:"webhook_url"`
-	Channel    string `yaml:"channel"`
+	CheckInterval   time.Duration `yaml:"check_interval"`
+	EventsQueueSize int           `yaml:"events_queue_size"`
+	Api             struct {
+		Addr string `yaml:"addr"`
+	} `yaml:"api"`
+	MongoDb struct {
+		Host string `yaml:"host"`
+	} `yaml:"mongodb"`
+	Torrents struct {
+		Transmission struct {
+			Endpoint    string `yaml:"endpoint"`
+			Username    string `yaml:"username"`
+			Password    string `yaml:"password"`
+			DownloadDir string `yaml:"download_dir"`
+		} `yaml:"transmission"`
+		Quality  []string `yaml:"quality"`
+		WatchDir string   `yaml:"watch_dir"`
+	} `yaml:"torrents"`
+	Slack struct {
+		WebhookUrl string `yaml:"webhook_url"`
+		Channel    string `yaml:"channel"`
+	} `yaml:"slack"`
+	Actions     []string `yaml:"actions"`
+	Downloaders []string `yaml:"downloaders"`
 }
 
 var config Config

@@ -23,7 +23,7 @@ func (Transmission) Download(e source.EpisodeSubscription, hash string, url stri
 		return err
 	}
 
-	logrus.Infof("torrent added: %s (%s)", info.HashString, info.Name)
+	logrus.Infof("transmission: torrent added: %s (%s)", info.HashString, info.Name)
 	source.GetPersistence("subscriptions").UpdateId(e.Id, bson.M{"$set": bson.M{"state": source.StateSeen}})
 
 	return nil

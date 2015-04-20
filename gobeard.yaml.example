@@ -1,10 +1,20 @@
 ---
 check_interval: 300s
 events_queue_size: 30
+
 mongodb:
   host: 127.0.0.1
+
 api:
   addr: 0.0.0.0:8080
+
+actions:
+  - log
+  - strike
+
+downloaders:
+  - transmission
+
 torrents:
 	transmission:
 		endpoint: http://127.0.0.1:9091
@@ -14,6 +24,7 @@ torrents:
   quality:
     - 720p
     - 1080p
+
 slack:
   webhook_url: https://hooks.slack.com/services/[...]
   channel: "#mychannel"

@@ -29,6 +29,7 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 	var err error
 
 	// Iterate over the desired qualities for the first match
+QualityLoop:
 	for _, q := range util.GetConfig().Torrents.Quality {
 		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(series.Series.Title), e.Info.Season, e.Info.Number, q)
 		resp, err = http.Get(u)
@@ -75,9 +76,11 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 		torrent_hash := t["torrent_hash"].(string)
 		torrent_url := fmt.Sprintf(ApiDownloadEndpoint, torrent_hash)
 
-		err = a.Subaction.Download(e, torrent_hash, torrent_url)
-		if err != nil {
-			continue
+		for _, d := range GetDownloaders() {
+			err = d.Download(e, torrent_hash, torrent_url)
+			if err != nil {
+				continue QualityLoop
+			}
 		}
 	}
 }
