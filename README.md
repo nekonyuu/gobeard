@@ -3,7 +3,7 @@
 ## Launch the daemon
 
 ```
-$ gobeard -c /path/to/config.yaml -d
+$ gobeard -config /path/to/config.yaml -d
 ```
 
 ## Get help on the client
