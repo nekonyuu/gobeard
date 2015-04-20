@@ -3,7 +3,7 @@ package action
 import (
 	"fmt"
 
-	"github.com/sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 
 	"github.com/apognu/gobeard/source"
 )

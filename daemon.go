@@ -3,10 +3,10 @@ package main
 import (
 	"time"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/apognu/gobeard/action"
 	"github.com/apognu/gobeard/source"
 	"github.com/apognu/gobeard/util"
-	"github.com/sirupsen/logrus"
 )
 
 func NewDaemon() {

@@ -3,21 +3,21 @@ package action
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"os"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/apognu/gobeard/source"
 	"github.com/apognu/gobeard/util"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type GetStrike struct{}
+type Strike struct {
+	Subaction Downloader
+}
 
-func (GetStrike) Trigger(e source.EpisodeSubscription) {
+func (a Strike) Trigger(e source.EpisodeSubscription) {
 	const ApiSearchEndpoint = "https://getstrike.net/api/v2/torrents/search/?phrase=%s+s%02.0fe%02.0f+%s"
 	const ApiSearchNoQualityEndpoint = "https://getstrike.net/api/v2/torrents/search/?phrase=%s+s%02.0fe%02.0f"
 	const ApiDownloadEndpoint = "https://getstrike.net/torrents/api/download/%s.torrent"
@@ -78,31 +78,5 @@ func (GetStrike) Trigger(e source.EpisodeSubscription) {
 	torrent_hash := t["torrent_hash"].(string)
 	torrent_url := fmt.Sprintf(ApiDownloadEndpoint, torrent_hash)
 
-	resp, err = http.Get(torrent_url)
-	if err != nil {
-		logrus.Errorf("error retrieving torrent file: %s", err)
-		return
-	}
-	defer resp.Body.Close()
-
-	tmp, err := ioutil.TempFile(os.TempDir(), "gobeard")
-	if err != nil {
-		logrus.Errorf("cannot create temporary file: %s", err)
-		return
-	}
-	defer os.Remove(tmp.Name())
-
-	_, err = io.Copy(tmp, resp.Body)
-	if err != nil {
-		logrus.Errorf("error writing torrent file: %s", err)
-		return
-	}
-
-	err = os.Rename(tmp.Name(), util.GetConfig().Torrents.WatchDir+"/"+torrent_hash+".torrent")
-	if err != nil {
-		logrus.Errorf("error creating output torrent file: %s", err)
-		return
-	}
-
-	source.GetPersistence("subscriptions").UpdateId(e.Id, bson.M{"$set": bson.M{"state": source.StateSeen}})
+	a.Subaction.Download(e, torrent_hash, torrent_url)
 }

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/apognu/gobeard/source"

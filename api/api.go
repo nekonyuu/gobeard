@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 

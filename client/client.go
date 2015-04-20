@@ -3,9 +3,9 @@ package client
 import (
 	"os"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/fatih/color"
 	"github.com/gonuts/commander"
-	"github.com/sirupsen/logrus"
 )
 
 var Blue func(...interface{}) string = color.New(color.FgBlue).SprintFunc()

@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/apognu/gobeard/source"
 	"github.com/gonuts/commander"
-	"github.com/sirupsen/logrus"
 	"gopkg.in/mgo.v2/bson"
 )
 

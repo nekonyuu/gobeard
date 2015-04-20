@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
@@ -26,8 +26,16 @@ type ApiConfig struct {
 }
 
 type TorrentsConfig struct {
-	Quality  []string `yaml:"quality"`
-	WatchDir string   `yaml:"watch_dir"`
+	Transmission TransmissionConfig `yaml:"transmission"`
+	Quality      []string           `yaml:"quality"`
+	WatchDir     string             `yaml:"watch_dir"`
+}
+
+type TransmissionConfig struct {
+	Endpoint    string `yaml:"endpoint"`
+	Username    string `yaml:"username"`
+	Password    string `yaml:"password"`
+	DownloadDir string `yaml:"download_dir"`
 }
 
 type SlackConfig struct {

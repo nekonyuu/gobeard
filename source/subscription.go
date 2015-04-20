@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
