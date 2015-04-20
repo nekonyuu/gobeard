@@ -26,7 +26,7 @@ func GetPersistence(c string) *mgo.Collection {
 		var err error
 		db, err = mgo.DialWithTimeout(util.GetConfig().MongoDb.Host, 2*time.Second)
 		if err != nil {
-			logrus.Fatalf("error connecting to MondoDB: %s", err)
+			logrus.Fatalf("error connecting to MongoDB: %s", err)
 		}
 	}
 
@@ -104,7 +104,7 @@ Main:
 			newEpisodes := make([]EpisodeSubscription, 0)
 			err := GetPersistence("subscriptions").Find(bson.M{"series": sub.Series.Id, "state": StateUnseen}).All(&newEpisodes)
 			if err != nil {
-				logrus.Errorf("filed to retrieve subscription: %s", err)
+				logrus.Errorf("failed to retrieve subscription: %s", err)
 				continue
 			}
 
