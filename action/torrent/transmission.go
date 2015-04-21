@@ -13,7 +13,7 @@ type Transmission struct{}
 func (Transmission) Download(e source.EpisodeSubscription, hash string, url string) error {
 	c := util.GetConfig().Torrents.Transmission
 	tr := transmission.New(c.Endpoint, c.Username, c.Password)
-	info, err := tr.AddTorrentByURL(url, "/tmp")
+	info, err := tr.AddTorrentByURL(url, c.DownloadDir)
 	if err != nil {
 		logrus.Errorf("error starting download: %s", err)
 		return err
