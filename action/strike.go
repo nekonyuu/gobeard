@@ -46,8 +46,8 @@ QualityLoop:
 		}
 		if resp.StatusCode != 200 {
 			logrus.Infof("no torrent found for quality %s, dropping it: %s", q, u)
-			resp = nil
 			resp.Body.Close()
+			resp = nil
 			continue
 		}
 
