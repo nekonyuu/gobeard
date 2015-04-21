@@ -43,7 +43,7 @@ func runCmdList(cmd *commander.Command, args []string) error {
 
 	fmt.Printf("Episode listing for series `%s`:\n", os.Args[2])
 	for _, item := range episodes {
-		fmt.Printf("  S%02.0fE%02.0f: %s (%s)\n", item.Season, item.Number, item.Title, item.Airdate.Format("2006-01-02"))
+		fmt.Printf("  S%02.0fE%02.0f: %s (%s)\n", item.Season, item.Number, item.Title, item.Airstamp.Format("2006-01-02"))
 	}
 
 	return nil

@@ -112,17 +112,17 @@ func (TVMaze) ListEpisodes(id int) []Episode {
 	}
 
 	for _, item := range raw {
-		airdate, err := time.Parse("2006-01-02", item["airdate"].(string))
+		airstamp, err := time.Parse("2006-01-02T15:04:05-07:00", item["airstamp"].(string))
 		if err != nil {
 			continue
 		}
 
 		episodes = append(episodes, Episode{
-			Id:      item["id"].(float64),
-			Season:  item["season"].(float64),
-			Number:  item["number"].(float64),
-			Title:   item["name"].(string),
-			Airdate: airdate,
+			Id:       item["id"].(float64),
+			Season:   item["season"].(float64),
+			Number:   item["number"].(float64),
+			Title:    item["name"].(string),
+			Airstamp: airstamp,
 		})
 	}
 

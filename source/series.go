@@ -8,9 +8,9 @@ type Series struct {
 }
 
 type Episode struct {
-	Id      float64
-	Season  float64
-	Number  float64
-	Title   string
-	Airdate time.Time
+	Id       float64
+	Season   float64
+	Number   float64
+	Title    string
+	Airstamp time.Time
 }

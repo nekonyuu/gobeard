@@ -92,7 +92,7 @@ Main:
 		case update := <-c:
 			for _, item := range update {
 				state := StateIgnored
-				if item.Airdate.After(time.Now()) {
+				if item.Airstamp.After(time.Now()) {
 					state = StateUnseen
 				}
 
@@ -114,7 +114,7 @@ Main:
 			}
 
 			for _, ep := range newEpisodes {
-				if ep.State == StateUnseen && ep.Info.Airdate.Before(time.Now()) {
+				if ep.State == StateUnseen && ep.Info.Airstamp.Before(time.Now()) {
 					e <- ep
 				}
 			}
