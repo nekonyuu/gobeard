@@ -26,13 +26,20 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 	source.GetPersistence("series").Find(bson.M{"source": e.Source, "series.id": e.SeriesId}).One(&series)
 
 	var resp *http.Response
-	var err error
+
+	cl := http.Client{}
 
 	// Iterate over the desired qualities for the first match
 QualityLoop:
 	for _, q := range util.GetConfig().Torrents.Quality {
 		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(series.Series.Title), e.Info.Season, e.Info.Number, q)
-		resp, err = http.Get(u)
+		req, err := http.NewRequest("GET", u, nil)
+		if err != nil {
+			logrus.Errorf("error getting torrents listing: %s", err)
+			return
+		}
+		req.Close = true
+		resp, err = cl.Do(req)
 		if err != nil {
 			logrus.Errorf("error getting torrents listing: %s", err)
 			return
@@ -40,6 +47,7 @@ QualityLoop:
 		if resp.StatusCode != 200 {
 			logrus.Infof("no torrent found for quality %s, dropping it: %s", q, u)
 			resp = nil
+			resp.Body.Close()
 			continue
 		}
 
@@ -79,6 +87,7 @@ QualityLoop:
 		for _, d := range GetDownloaders() {
 			err = d.Download(e, torrent_hash, torrent_url)
 			if err != nil {
+				resp.Body.Close()
 				continue QualityLoop
 			}
 		}

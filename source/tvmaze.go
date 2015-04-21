@@ -26,7 +26,14 @@ func (TVMaze) Name() string {
 func (TVMaze) SearchSeries(title string) []Series {
 	const apiEndpoint = "http://api.tvmaze.com/search/shows?q=%s"
 
-	resp, err := http.Get(fmt.Sprintf(apiEndpoint, title))
+	cl := http.Client{}
+	req, err := http.NewRequest("GET", fmt.Sprintf(apiEndpoint, title), nil)
+	if err != nil {
+		logrus.Errorf("failed to search for %s", title)
+		return []Series{}
+	}
+	req.Close = true
+	resp, err := cl.Do(req)
 	if err != nil {
 		logrus.Errorf("failed to search for %s", title)
 		return []Series{}
@@ -61,7 +68,14 @@ func (TVMaze) SearchSeries(title string) []Series {
 func (TVMaze) GetSeries(id int) Series {
 	const apiEndpoint = "http://api.tvmaze.com/shows/%d"
 
-	resp, err := http.Get(fmt.Sprintf(apiEndpoint, id))
+	cl := http.Client{}
+	req, err := http.NewRequest("GET", fmt.Sprintf(apiEndpoint, id), nil)
+	if err != nil {
+		logrus.Errorf("failed to search for %d: %s", id, err)
+		return Series{}
+	}
+	req.Close = true
+	resp, err := cl.Do(req)
 	if err != nil {
 		logrus.Errorf("failed to search for %d: %s", id, err)
 		return Series{}
@@ -90,7 +104,13 @@ func (TVMaze) GetSeries(id int) Series {
 func (TVMaze) ListEpisodes(id int) []Episode {
 	const apiEndpoint = "http://api.tvmaze.com/shows/%d/episodes"
 
-	resp, err := http.Get(fmt.Sprintf(apiEndpoint, id))
+	cl := http.Client{}
+	req, err := http.NewRequest("GET", fmt.Sprintf(apiEndpoint, id), nil)
+	if err != nil {
+		logrus.Errorf("failed to list episodes for %d: %s", id, err)
+		return []Episode{}
+	}
+	resp, err := cl.Do(req)
 	if err != nil {
 		logrus.Errorf("failed to list episodes for %d: %s", id, err)
 		return []Episode{}
