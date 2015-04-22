@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
 
 	"github.com/Sirupsen/logrus"
 	"github.com/apognu/gobeard/source"
@@ -32,7 +33,8 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 	// Iterate over the desired qualities for the first match
 QualityLoop:
 	for _, q := range util.GetConfig().Torrents.Quality {
-		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(series.Series.Title), e.Info.Season, e.Info.Number, q)
+		r := regexp.MustCompile(`([^a-zA-Z0-9 ])`)
+		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(r.ReplaceAllString(series.Series.Title, "")), e.Info.Season, e.Info.Number, q)
 		req, err := http.NewRequest("GET", u, nil)
 		if err != nil {
 			logrus.Errorf("error getting torrents listing: %s", err)
@@ -54,7 +56,13 @@ QualityLoop:
 		// Drop the quality requirement if none matched
 		if resp == nil {
 			u := fmt.Sprintf(ApiSearchNoQualityEndpoint, url.QueryEscape(series.Series.Title), e.Info.Season, e.Info.Number)
-			resp, err = http.Get(u)
+			req, err := http.NewRequest("GET", u, nil)
+			if err != nil {
+				logrus.Errorf("error getting torrents listing: %s", err)
+				return
+			}
+			req.Close = true
+			resp, err = cl.Do(req)
 			if err != nil {
 				logrus.Errorf("error getting torrents listing: %s", err)
 				return
