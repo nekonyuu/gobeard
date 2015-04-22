@@ -3,8 +3,9 @@ package source
 import "time"
 
 type Series struct {
-	Id    float64
-	Title string
+	Id      float64
+	Title   string
+	Summary string
 }
 
 type Episode struct {

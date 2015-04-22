@@ -57,8 +57,9 @@ func (TVMaze) SearchSeries(title string) []Series {
 		show := item["show"].(map[string]interface{})
 
 		series = append(series, Series{
-			Id:    show["id"].(float64),
-			Title: show["name"].(string),
+			Id:      show["id"].(float64),
+			Title:   show["name"].(string),
+			Summary: show["summary"].(string),
 		})
 	}
 

@@ -11,6 +11,5 @@ type Source interface {
 func GetSources() map[string]Source {
 	return map[string]Source{
 		"tvmaze": NewTVMaze(),
-		"dummy":  NewDummy(),
 	}
 }

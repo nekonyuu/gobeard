@@ -23,7 +23,7 @@ func runCmdSubscriptions(cmd *commander.Command, args []string) error {
 	source.GetPersistence("series").Find(nil).All(&series)
 
 	fmt.Println("Active subscriptions:")
-	o := make([]string, 0)
+	o := []string{fmt.Sprintf("%s|%s", Bold("ID"), "Title")}
 	for _, s := range series {
 		o = append(o, fmt.Sprintf("%s|%s\n", Bold(s.GetId()), s.Series.Title))
 	}

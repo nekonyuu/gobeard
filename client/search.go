@@ -6,6 +6,7 @@ import (
 
 	"github.com/apognu/gobeard/source"
 	"github.com/gonuts/commander"
+	"github.com/kennygrant/sanitize"
 	"github.com/ryanuber/columnize"
 )
 
@@ -33,9 +34,9 @@ func runCmdSearch(cmd *commander.Command, args []string) error {
 		series := src.SearchSeries(t)
 
 		fmt.Printf("Search results for `%s` and source `%s`:\n", t, name)
-		o := make([]string, 0)
+		o := []string{fmt.Sprintf("%s|%s|%s", Bold("ID"), "Title", "Summary")}
 		for _, item := range series {
-			o = append(o, fmt.Sprintf("%s|%s\n", Bold(fmt.Sprintf("%s/%0.0f", name, item.Id)), item.Title))
+			o = append(o, fmt.Sprintf("%s|%s|%.70s...\n", Bold(fmt.Sprintf("%s/%0.0f", name, item.Id)), item.Title, sanitize.HTML(item.Summary)))
 		}
 		fmt.Println(columnize.Format(o, &columnize.Config{Prefix: "  "}))
 	}
