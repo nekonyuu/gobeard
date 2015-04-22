@@ -5,6 +5,7 @@ import (
 
 	"github.com/apognu/gobeard/source"
 	"github.com/gonuts/commander"
+	"github.com/ryanuber/columnize"
 )
 
 func CmdSubscriptions() (cmd *commander.Command) {
@@ -22,9 +23,11 @@ func runCmdSubscriptions(cmd *commander.Command, args []string) error {
 	source.GetPersistence("series").Find(nil).All(&series)
 
 	fmt.Println("Active subscriptions:")
+	o := make([]string, 0)
 	for _, s := range series {
-		fmt.Printf("  %s: %s\n", s.GetId(), s.Series.Title)
+		o = append(o, fmt.Sprintf("%s|%s\n", Bold(s.GetId()), s.Series.Title))
 	}
+	fmt.Println(columnize.Format(o, &columnize.Config{Prefix: "  "}))
 
 	return nil
 }

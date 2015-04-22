@@ -9,6 +9,7 @@ import (
 	"github.com/Sirupsen/logrus"
 	"github.com/apognu/gobeard/source"
 	"github.com/gonuts/commander"
+	"github.com/ryanuber/columnize"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -51,14 +52,15 @@ func runCmdSubscription(cmd *commander.Command, args []string) error {
 		logrus.Fatalf("cannot retrieve subscription: %s", err)
 	}
 
-	fmt.Printf("Subscription status for `%s`\n", Blue(os.Args[2]))
-	fmt.Printf("  Series: %s\n", Blue(series.Series.Title))
+	fmt.Printf("Subscription status for %s (%s)\n", Bold(os.Args[2]), Blue(series.Series.Title))
 
 	if len(subs) == 0 {
-		fmt.Println("    No episode for this subscription yet, is the daemon running?")
+		fmt.Println("  No episode for this subscription yet, is the daemon running?")
 		return nil
 	}
 
+	o := []string{fmt.Sprintf("%s|%s|%s|%s", Bold("ID"), "Episode", "Title", "State")}
+	// o := make([]string, 0)
 	for _, s := range subs {
 		var st string
 		switch s.State {
@@ -70,8 +72,10 @@ func runCmdSubscription(cmd *commander.Command, args []string) error {
 			st = Green(s.State)
 		}
 
-		fmt.Printf("    %s/%d/%0.0f: S%02.0fE%02.0f - %s [%s]\n", s.Source, s.SeriesId, s.Info.Id, s.Info.Season, s.Info.Number, s.Info.Title, st)
+		o = append(o, fmt.Sprintf("%s|S%02.0fE%02.0f|%s|[%-16s]\n", Bold(fmt.Sprintf("%s/%d/%0.0f", s.Source, s.SeriesId, s.Info.Id)), s.Info.Season, s.Info.Number, s.Info.Title, st))
 	}
+	// fmt.Println(o)
+	fmt.Println(columnize.Format(o, &columnize.Config{Prefix: "  "}))
 
 	return nil
 }

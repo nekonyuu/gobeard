@@ -12,6 +12,7 @@ var Blue func(...interface{}) string = color.New(color.FgBlue).SprintFunc()
 var Yellow func(...interface{}) string = color.New(color.FgYellow).SprintFunc()
 var Green func(...interface{}) string = color.New(color.FgGreen).SprintFunc()
 var Red func(...interface{}) string = color.New(color.FgRed).SprintFunc()
+var Bold func(...interface{}) string = color.New(color.Bold).SprintFunc()
 
 func NewClient() {
 	var CmdLine = &commander.Command{
