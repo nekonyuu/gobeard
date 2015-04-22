@@ -30,8 +30,10 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 
 	cl := http.Client{}
 
-	r := regexp.MustCompile(`([^a-zA-Z0-9 ])`)
+	r := regexp.MustCompile(`([^a-zA-Z0-9' ])`)
 	title := r.ReplaceAllString(series.Series.Title, " ")
+	r = regexp.MustCompile(`(')`)
+	title = r.ReplaceAllString(title, "")
 
 	// Iterate over the desired qualities for the first match
 	for _, q := range util.GetConfig().Torrents.Quality {

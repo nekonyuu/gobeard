@@ -25,7 +25,7 @@ func (Transmission) Download(e source.EpisodeSubscription, hash string, url stri
 		return err
 	}
 	if info.HashString == "" {
-		logrus.Errorf("error starting downloaded file")
+		logrus.Errorf("error starting downloaded file, hash was empty")
 		return err
 	}
 
