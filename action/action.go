@@ -1,7 +1,6 @@
 package action
 
 import (
-	"github.com/apognu/gobeard/action/torrent"
 	"github.com/apognu/gobeard/source"
 	"github.com/apognu/gobeard/util"
 )
@@ -21,8 +20,8 @@ var actions = map[string]Action{
 }
 
 var downloaders = map[string]Downloader{
-	"watchdir":     torrent.WatchDir{},
-	"transmission": torrent.Transmission{},
+	"watchdir":     WatchDir{},
+	"transmission": Transmission{},
 }
 
 func GetActions() []Action {

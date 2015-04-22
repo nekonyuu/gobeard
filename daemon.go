@@ -13,6 +13,8 @@ func NewDaemon() {
 	event := make(chan source.EpisodeSubscription, util.GetConfig().EventsQueueSize)
 	go checkForSubscriptions(event)
 
+	logrus.WithFields(logrus.Fields{"actions": util.GetConfig().Actions}).Infof("configured actions")
+
 	for {
 		select {
 		case e := <-event:

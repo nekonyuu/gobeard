@@ -1,4 +1,4 @@
-package torrent
+package action
 
 import (
 	"github.com/Sirupsen/logrus"
@@ -27,6 +27,10 @@ func (Transmission) Download(e source.EpisodeSubscription, hash string, url stri
 	if info.HashString == "" {
 		logrus.Errorf("error starting downloaded file, hash was empty")
 		return err
+	}
+
+	if util.GetConfig().Slack.WebhookUrl != "" {
+		Slack{}.Trigger(e)
 	}
 
 	logrus.Infof("transmission: torrent added: %s (%s)", info.HashString, info.Name)
