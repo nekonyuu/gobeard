@@ -30,10 +30,12 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 
 	cl := http.Client{}
 
+	r := regexp.MustCompile(`([^a-zA-Z0-9 ])`)
+	title := r.ReplaceAllString(series.Series.Title, " ")
+
 	// Iterate over the desired qualities for the first match
 	for _, q := range util.GetConfig().Torrents.Quality {
-		r := regexp.MustCompile(`([^a-zA-Z0-9 ])`)
-		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(r.ReplaceAllString(series.Series.Title, "")), e.Info.Season, e.Info.Number, q)
+		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(title), e.Info.Season, e.Info.Number, q)
 		req, err := http.NewRequest("GET", u, nil)
 		if err != nil {
 			logrus.Errorf("error getting torrents listing: %s", err)
@@ -55,7 +57,7 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 
 	// Drop the quality requirement if none matched
 	if resp == nil {
-		u := fmt.Sprintf(ApiSearchNoQualityEndpoint, url.QueryEscape(series.Series.Title), e.Info.Season, e.Info.Number)
+		u := fmt.Sprintf(ApiSearchNoQualityEndpoint, url.QueryEscape(title), e.Info.Season, e.Info.Number)
 		req, err := http.NewRequest("GET", u, nil)
 		if err != nil {
 			logrus.Errorf("error getting torrents listing: %s", err)
