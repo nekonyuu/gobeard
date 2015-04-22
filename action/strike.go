@@ -37,7 +37,7 @@ func (a Strike) Trigger(e source.EpisodeSubscription) {
 
 	// Iterate over the desired qualities for the first match
 	for _, q := range util.GetConfig().Torrents.Quality {
-		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(title), e.Info.Season, e.Info.Number, q)
+		u := fmt.Sprintf(ApiSearchEndpoint, url.QueryEscape(title), e.Info.Season, e.Info.Number, url.QueryEscape(q))
 		req, err := http.NewRequest("GET", u, nil)
 		if err != nil {
 			logrus.Errorf("error getting torrents listing: %s", err)
