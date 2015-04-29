@@ -1,6 +1,7 @@
 package client
 
 import (
+	"flag"
 	"os"
 
 	"github.com/Sirupsen/logrus"
@@ -30,7 +31,7 @@ func NewClient() {
 		CmdSubscription(),
 	}
 
-	CmdLine.Dispatch(os.Args[1:])
+	CmdLine.Dispatch(flag.Args())
 }
 
 func argumentError(cmd *commander.Command, msg string) {
