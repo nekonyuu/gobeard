@@ -31,6 +31,10 @@ type Config struct {
 		WebhookUrl string `yaml:"webhook_url"`
 		Channel    string `yaml:"channel"`
 	} `yaml:"slack"`
+	Anilist struct {
+		ClientID     string `yaml:"client_id"`
+		ClientSecret string `yaml:"client_secret"`
+	} `yaml:"anilist"`
 	Actions     []string `yaml:"actions"`
 	Downloaders []string `yaml:"downloaders"`
 }

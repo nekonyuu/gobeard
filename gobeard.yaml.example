@@ -1,4 +1,4 @@
----
+  ---
 check_interval: 300s
 events_queue_size: 30
 
@@ -28,3 +28,7 @@ torrents:
 slack:
   webhook_url: https://hooks.slack.com/services/[...]
   channel: "#mychannel"
+
+anilist:
+  client_id: changeme
+  client_secret: changeme
