@@ -28,7 +28,7 @@ func (Anilist) Name() string {
 	return "anilist"
 }
 
-func (a Anilist) Authenticate() {
+func (a *Anilist) Authenticate() {
 	const apiAuthEndpoint = "https://anilist.co/api/auth/access_token"
 
 	payload := url.Values{}
@@ -38,26 +38,26 @@ func (a Anilist) Authenticate() {
 
 	resp, err := http.PostForm(apiAuthEndpoint, payload)
 	if err != nil {
-		logrus.Errorf("failed to send authentication request on anilist api")
+		logrus.Errorf("Anilist.Authenticate: failed to send authentication request on anilist api")
 		return
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		logrus.Errorf("failed to authenticate on anilist api, http code %d", resp.StatusCode)
+		logrus.Errorf("Anilist.Authenticate: failed to authenticate on anilist api, http code %d", resp.StatusCode)
 		return
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Errorf("failed to authenticate on anilist api : no body")
+		logrus.Errorf("Anilist.Authenticate: failed to authenticate on anilist api : no body")
 		return
 	}
 
 	var raw map[string]interface{}
 	err = json.Unmarshal(body, &raw)
 	if err != nil {
-		logrus.Errorf("failed to parse upstream data: %s", err)
+		logrus.Errorf("Anilist.Authenticate: failed to parse upstream data: %s", err)
 		return
 	}
 
@@ -71,14 +71,14 @@ func (a Anilist) SearchSeries(title string) []Series {
 
 	resp, err := http.Get(fmt.Sprintf(apiEndpoint, title, a.token))
 	if err != nil {
-		logrus.Errorf("failed to search for %s", title)
+		logrus.Errorf("Anilist.SearchSeries: failed to search for %s", title)
 		return []Series{}
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Errorf("failed to search for %s", title)
+		logrus.Errorf("Anilist.SearchSeries: failed to search for %s", title)
 		return []Series{}
 	}
 
@@ -93,7 +93,7 @@ func (a Anilist) SearchSeries(title string) []Series {
 
 		err = json.Unmarshal(body, &raw)
 		if err != nil {
-			logrus.Errorf("failed to parse upstream data: %s", err)
+			logrus.Errorf("Anilist.SearchSeries: failed to parse upstream data: %s", err)
 		}
 
 		for _, show := range raw {
@@ -103,7 +103,7 @@ func (a Anilist) SearchSeries(title string) []Series {
 			})
 		}
 	} else {
-		logrus.Warnf("could not find %s : http code %d", title, resp.StatusCode)
+		logrus.Warnf("Anilist.SearchSeries: could not find %s : http code %d", title, resp.StatusCode)
 	}
 
 	return series
@@ -114,14 +114,14 @@ func (a Anilist) GetSeries(id int) Series {
 
 	resp, err := http.Get(fmt.Sprintf(apiEndpoint, id, a.token))
 	if err != nil {
-		logrus.Errorf("failed to search for %d: %s", id, err)
+		logrus.Errorf("Anilist.GetSeries: failed to search for %d: %s", id, err)
 		return Series{}
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Errorf("failed to search for %d", id)
+		logrus.Errorf("Anilist.GetSeries: failed to search for %d", id)
 		return Series{}
 	}
 
@@ -129,7 +129,7 @@ func (a Anilist) GetSeries(id int) Series {
 		var raw map[string]interface{}
 		err = json.Unmarshal(body, &raw)
 		if err != nil {
-			logrus.Errorf("failed to parse upstream data: %s", err)
+			logrus.Errorf("Anilist.GetSeries: failed to parse upstream data: %s", err)
 			return Series{}
 		}
 
@@ -148,21 +148,21 @@ func (a Anilist) ListEpisodes(id int) []Episode {
 
 	resp, err := http.Get(fmt.Sprintf(apiEndpoint, id, a.token))
 	if err != nil {
-		logrus.Errorf("failed to search for %d: %s", id, err)
+		logrus.Errorf("Anilist.ListEpisodes: failed to search for %d: %s", id, err)
 		return []Episode{}
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		logrus.Errorf("failed to search for %d", id)
+		logrus.Errorf("Anilist.ListEpisodes: failed to search for %d", id)
 		return []Episode{}
 	}
 
 	var raw map[string]interface{}
 	err = json.Unmarshal(body, &raw)
 	if err != nil {
-		logrus.Errorf("failed to parse upstream data: %s", err)
+		logrus.Errorf("Anilist.ListEpisodes: failed to parse upstream data: %s", err)
 		return []Episode{}
 	}
 
