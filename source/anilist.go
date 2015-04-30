@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/Sirupsen/logrus"
@@ -84,6 +85,10 @@ func (a Anilist) SearchSeries(title string) []Series {
 	var series []Series
 
 	if resp.StatusCode == 200 {
+		if len(strings.TrimSpace(string(body))) == 0 {
+			return series
+		}
+
 		var raw []map[string]interface{}
 
 		err = json.Unmarshal(body, &raw)
