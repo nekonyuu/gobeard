@@ -29,13 +29,13 @@ func (Anilist) Name() string {
 
 func (a Anilist) Authenticate() {
 	const apiAuthEndpoint = "https://anilist.co/api/auth/access_token"
-	cl := http.Client{}
 
 	payload := url.Values{}
 	payload.Add("client_id", util.GetConfig().Anilist.ClientID)
 	payload.Add("client_secret", util.GetConfig().Anilist.ClientSecret)
+	payload.Add("grant_type", "client_credentials")
 
-	resp, err := cl.PostForm(apiAuthEndpoint, payload)
+	resp, err := http.PostForm(apiAuthEndpoint, payload)
 	if err != nil {
 		logrus.Errorf("failed to send authentication request on anilist api")
 		return
@@ -68,8 +68,7 @@ func (a Anilist) Authenticate() {
 func (a Anilist) SearchSeries(title string) []Series {
 	const apiEndpoint = "https://anilist.co/api/anime/search/%s?access_token=%s"
 
-	cl := http.Client{}
-	resp, err := cl.Get(fmt.Sprintf(apiEndpoint, title, a.token))
+	resp, err := http.Get(fmt.Sprintf(apiEndpoint, title, a.token))
 	if err != nil {
 		logrus.Errorf("failed to search for %s", title)
 		return []Series{}
@@ -82,18 +81,24 @@ func (a Anilist) SearchSeries(title string) []Series {
 		return []Series{}
 	}
 
-	var raw []map[string]interface{}
 	var series []Series
-	err = json.Unmarshal(body, &raw)
-	if err != nil {
-		logrus.Errorf("failed to parse upstream data: %s", err)
-	}
 
-	for _, show := range raw {
-		series = append(series, Series{
-			Id:    show["id"].(float64),
-			Title: show["title_romaji"].(string),
-		})
+	if resp.StatusCode == 200 {
+		var raw []map[string]interface{}
+
+		err = json.Unmarshal(body, &raw)
+		if err != nil {
+			logrus.Errorf("failed to parse upstream data: %s", err)
+		}
+
+		for _, show := range raw {
+			series = append(series, Series{
+				Id:    show["id"].(float64),
+				Title: show["title_romaji"].(string),
+			})
+		}
+	} else {
+		logrus.Warnf("could not find %s : http code %d", title, resp.StatusCode)
 	}
 
 	return series
@@ -102,8 +107,7 @@ func (a Anilist) SearchSeries(title string) []Series {
 func (a Anilist) GetSeries(id int) Series {
 	const apiEndpoint = "https://anilist.co/api/anime/%d?access_token=%s"
 
-	cl := http.Client{}
-	resp, err := cl.Get(fmt.Sprintf(apiEndpoint, id, a.token))
+	resp, err := http.Get(fmt.Sprintf(apiEndpoint, id, a.token))
 	if err != nil {
 		logrus.Errorf("failed to search for %d: %s", id, err)
 		return Series{}
@@ -116,26 +120,28 @@ func (a Anilist) GetSeries(id int) Series {
 		return Series{}
 	}
 
-	var raw map[string]interface{}
-	err = json.Unmarshal(body, &raw)
-	if err != nil {
-		logrus.Errorf("failed to parse upstream data: %s", err)
-		return Series{}
-	}
+	if resp.StatusCode == 200 {
+		var raw map[string]interface{}
+		err = json.Unmarshal(body, &raw)
+		if err != nil {
+			logrus.Errorf("failed to parse upstream data: %s", err)
+			return Series{}
+		}
 
-	return Series{
-		Id:           raw["id"].(float64),
-		Title:        raw["title_romaji"].(string),
-		Summary:      raw["description"].(string),
-		EpisodeCount: raw["total_episodes"].(float64),
+		return Series{
+			Id:           raw["id"].(float64),
+			Title:        raw["title_romaji"].(string),
+			Summary:      raw["description"].(string),
+			EpisodeCount: raw["total_episodes"].(float64),
+		}
 	}
+	return Series{}
 }
 
 func (a Anilist) ListEpisodes(id int) []Episode {
 	const apiEndpoint = "https://anilist.co/api/anime/%d?access_token=%s"
 
-	cl := http.Client{}
-	resp, err := cl.Get(fmt.Sprintf(apiEndpoint, id, a.token))
+	resp, err := http.Get(fmt.Sprintf(apiEndpoint, id, a.token))
 	if err != nil {
 		logrus.Errorf("failed to search for %d: %s", id, err)
 		return []Episode{}
